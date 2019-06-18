@@ -5,6 +5,11 @@ import commonjs from 'rollup-plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 
+import postcssImport from 'postcss-import';
+import postcss from 'rollup-plugin-postcss';
+import tailwind from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
+
 const production = !process.env.ROLLUP_WATCH;
 
 export default {
@@ -14,33 +19,27 @@ export default {
 		format: 'iife',
 		sourcemap: true,
 		file: 'public/main.js',
-
 	},
 	plugins: [
 		svelte({
-			// enable run-time checks when not in production
 			dev: !production,
-			// we'll extract any component CSS out into
-			// a separate file — better for performance
-			css: css => {
-				css.write('public/bundle.css');
-			}
+      emitCss: true
 		}),
-
-		// If you have external dependencies installed from
-		// npm, you'll most likely need these plugins. In
-		// some cases you'll need additional configuration —
-		// consult the documentation for details:
-		// https://github.com/rollup/rollup-plugin-commonjs
+    postcss({
+      plugins: [
+        postcssImport,
+        tailwind(),
+        autoprefixer,
+        production && removeUnusedCss,
+      ].filter(Boolean),
+      extract: './public/bundle.css',
+    }),
 		resolve(),
     html(),
 		commonjs(),
-
-		// If we're building for production (npm run build
-		// instead of npm run dev), minify
+    !production && livereload('public'),
 		production && terser()
 	],
-
 	watch: {
 		clearScreen: false
 	}
