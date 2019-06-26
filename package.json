@@ -33,6 +33,6 @@
   "dependencies": {
     "codemirror": "^5.47.0",
     "marked": "^0.6.2",
-    "svelte-javascript-tutorials": "0.0.7"
+    "svelte-javascript-tutorials": "0.0.8"
   }
 }

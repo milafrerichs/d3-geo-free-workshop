@@ -2,17 +2,34 @@
   @import 'tailwindcss/base';
   @import 'tailwindcss/components';
   @import 'tailwindcss/utilities';
+  @import 'highlight.js/styles/github.css';
+  :global(.markdown h1) {
+    font-size: 2.25rem;
+  }
+  :global(.markdown h2) {
+    font-size: 1.5rem;
+  }
+  :global(.markdown p) {
+    margin-bottom: 2rem;
+  }
+  :global(.h-half) {
+    height: 50vh;
+  }
 </style>
 
 <script>
+  import hljs from 'highlight.js';
   import { onMount } from 'svelte';
-  import marked from 'marked';
   import Tutorials from 'svelte-javascript-tutorials';
+  import { getContent } from './tutorialContent.js'
 
   let cssStyles = {
-    container: 'flex',
-    contentContainer: 'w-1/4 flex-col',
-    resultContainer: 'flex flex-col',
+    container: 'flex h-screen',
+    contentContainer: 'w-1/4 flex-col markdown h-screen p-4',
+    resultContainer: 'flex flex-col w-3/4 h-screem mt-3',
+    viewer: 'mt-4 border mr-2 h-half',
+    editor: 'h-half',
+    actions: 'mt-4 flex',
     button: {
       default: 'rounded bg-blue-100 p-2'
     }
@@ -23,25 +40,8 @@
       code: '',
       solution: ''
     }]
-  onMount(() => {
-    const urls = [
-      'tutorials/1/solution.js',
-      'tutorials/1/code.js',
-      'tutorials/1/content.md',
-    ];
-
-    // use map() to perform a fetch and handle the response for each url
-    Promise.all(urls.map(url =>
-      fetch(url)
-      .then((response) => response.text())
-      .catch((e) => {
-        console.error(e)
-      })
-    ))
-    .then(data => {
-      chapters = [];
-      chapters.push({content: marked(data[2]), code: data[1], solution: data[0]})
-    })
+  onMount(async () => {
+    chapters = await getContent('tutorials/simplest-map', 6)
   })
 </script>
 <Tutorials {cssStyles} {chapters}/>
